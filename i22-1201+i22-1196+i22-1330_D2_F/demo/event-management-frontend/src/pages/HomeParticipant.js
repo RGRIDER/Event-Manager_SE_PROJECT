@@ -33,6 +33,10 @@ function HomeParticipant() {
         navigate("/send-feedback");
     };
 
+    const navigateToNotifications = () => {
+        navigate("/notifications");
+    };
+
     return (
         <div className="container mt-5">
             <Navbar />
@@ -85,6 +89,18 @@ function HomeParticipant() {
                             <p className="card-text">Provide feedback on events you attended to help improve future experiences.</p>
                             <button className="btn btn-warning mt-auto" onClick={navigateToSendFeedback}>
                                 Send Feedback
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-md-3 mb-3">
+                    <div className="card h-100">
+                        <div className="card-body d-flex flex-column">
+                            <h5 className="card-title">View Notifications</h5>
+                            <p className="card-text">See all announcements made in events you’re part of.</p>
+                            <button className="btn btn-info mt-auto" onClick={navigateToNotifications}>
+                                View Notifications
                             </button>
                         </div>
                     </div>

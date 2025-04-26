@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,29 +17,31 @@ public class UserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public User registerUser(User user) {
+    public boolean registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return null; // Return null if email exists
+            return false; // Email already exists
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Hash password
-        return userRepository.save(user); // Return the saved user
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+        return true;
     }
 
-    public Optional<User> authenticateUser(String email, String password, String userType) {
+    public Optional<User> login(String email, String password) {
         Optional<User> userOpt = userRepository.findByEmail(email);
-
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-
-            // Validate password and user type
-            if (passwordEncoder.matches(password, user.getPassword()) && user.getUserType().equals(userType)) {
+            if (passwordEncoder.matches(password, user.getPassword())) {
                 return Optional.of(user);
             }
         }
-        return Optional.empty(); // Return empty if authentication fails
+        return Optional.empty();
     }
 
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

@@ -16,11 +16,31 @@ function HomeAdmin() {
         }
     }, [navigate]);
 
+    const navigateToFullReport = () => {
+        navigate("/admin-full-report");
+    };
+
     return (
-        <div className="container text-center mt-5">
+        <div className="container mt-5">
             <Navbar />
-            <h1>Welcome, Admin {user?.firstName}!</h1>
-            <p>This is your dashboard.</p>
+            <div className="text-center mb-5">
+                <h1>Welcome, Admin {user?.firstName}!</h1>
+                <p>This is your dashboard.</p>
+            </div>
+
+            <div className="row mb-5 justify-content-center">
+                <div className="col-md-4">
+                    <div className="card h-100">
+                        <div className="card-body d-flex flex-column">
+                            <h5 className="card-title">Full Report</h5>
+                            <p className="card-text">View detailed reports of all events and participants.</p>
+                            <button className="btn btn-primary mt-auto" onClick={navigateToFullReport}>
+                                View Full Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

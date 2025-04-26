@@ -14,7 +14,10 @@ import EnrollEvent from "./pages/EnrollEvent";
 import UnenrollEvent from "./pages/UnenrollEvent";
 import ViewEvents from "./pages/ViewEvents";
 import SendFeedback from "./pages/SendFeedback";
-
+import FeedbackReportPage from "./pages/FeedbackReportPage";
+import AddAnnouncement from "./pages/AddAnnouncement";
+import NotificationsPage from "./pages/NotificationsPage";
+import AdminFullReport from "./pages/AdminFullReport";
 
 function App() {
     return (
@@ -34,6 +37,13 @@ function App() {
                 <Route path="/unenroll" element={<UnenrollEvent />} />
                 <Route path="/view-events" element={<ViewEvents />} />
                 <Route path="/send-feedback" element={<SendFeedback />} />
+                <Route path="/feedback-report" element={<FeedbackReportPage />} />
+                <Route path="/add-announcement" element={<AddAnnouncement />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/admin-full-report" element={<AdminFullReport />} />
+
+
+
             </Routes>
         </Router>
     );

@@ -16,17 +16,11 @@ function HomeOrganizer() {
         }
     }, [navigate]);
 
-    const navigateToCreateEvent = () => {
-        navigate("/create-event");
-    };
-
-    const navigateToModifyEvent = () => {
-        navigate("/modify-event");
-    };
-
-    const navigateToDeleteEvent = () => {
-        navigate("/delete-event");
-    };
+    const navigateToCreateEvent = () => navigate("/create-event");
+    const navigateToModifyEvent = () => navigate("/modify-event");
+    const navigateToDeleteEvent = () => navigate("/delete-event");
+    const navigateToFeedbackReport = () => navigate("/feedback-report");
+    const navigateToAddAnnouncement = () => navigate("/add-announcement");
 
     return (
         <div className="container mt-5">
@@ -37,7 +31,7 @@ function HomeOrganizer() {
             </div>
 
             <div className="row mb-5">
-                <div className="col-md-4 mb-3">
+                <div className="col-md-3 mb-3">
                     <div className="card h-100">
                         <div className="card-body d-flex flex-column">
                             <h5 className="card-title">Create Event</h5>
@@ -49,7 +43,7 @@ function HomeOrganizer() {
                     </div>
                 </div>
 
-                <div className="col-md-4 mb-3">
+                <div className="col-md-3 mb-3">
                     <div className="card h-100">
                         <div className="card-body d-flex flex-column">
                             <h5 className="card-title">Modify Event</h5>
@@ -61,13 +55,37 @@ function HomeOrganizer() {
                     </div>
                 </div>
 
-                <div className="col-md-4 mb-3">
+                <div className="col-md-3 mb-3">
                     <div className="card h-100">
                         <div className="card-body d-flex flex-column">
                             <h5 className="card-title">Delete Event</h5>
                             <p className="card-text">Remove events that are no longer needed or have been cancelled.</p>
                             <button className="btn btn-danger mt-auto" onClick={navigateToDeleteEvent}>
                                 Delete Events
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-md-3 mb-3">
+                    <div className="card h-100">
+                        <div className="card-body d-flex flex-column">
+                            <h5 className="card-title">View Feedback Report</h5>
+                            <p className="card-text">See average rating and reviews of your hosted events.</p>
+                            <button className="btn btn-success mt-auto" onClick={navigateToFeedbackReport}>
+                                View Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-md-3 mb-3">
+                    <div className="card h-100">
+                        <div className="card-body d-flex flex-column">
+                            <h5 className="card-title">Add Announcement</h5>
+                            <p className="card-text">Send a new announcement for any event you’re organizing.</p>
+                            <button className="btn btn-info mt-auto" onClick={navigateToAddAnnouncement}>
+                                Add Announcement
                             </button>
                         </div>
                     </div>
