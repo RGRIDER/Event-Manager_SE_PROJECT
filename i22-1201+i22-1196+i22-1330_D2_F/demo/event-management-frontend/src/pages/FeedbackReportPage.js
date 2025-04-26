@@ -2,76 +2,56 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 function FeedbackReportPage() {
-    const [user, setUser] = useState(null);
     const [events, setEvents] = useState([]);
-    const [selectedEventId, setSelectedEventId] = useState(null);
+    const [selectedEventId, setSelectedEventId] = useState("");
     const [feedbackReport, setFeedbackReport] = useState(null);
     const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem("user"));
 
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (!storedUser || storedUser.userType !== "Organizer") {
-            navigate("/login");
-        } else {
-            setUser(storedUser);
-            fetchEvents(storedUser.email);
+        if (user && user.email) {
+            axios.get(`http://localhost:8080/api/organizers/my-events/${user.email}`)
+                .then(res => {
+                    setEvents(res.data);
+                })
+                .catch(err => {
+                    console.error("Error fetching events:", err);
+                });
         }
-    }, [navigate]);
+    }, [user]);
 
-    const fetchEvents = async (email) => {
-        try {
-            const res = await axios.get(`http://localhost:8080/api/events/my-events/${email}`);
-            const data = res.data;
-            if (data.events) {
-                setEvents(data.events);
-            } else {
-                setEvents([]);
-            }
-        } catch (err) {
-            console.error("Error fetching events:", err);
+    const handleFetchReport = () => {
+        if (!selectedEventId) {
+            alert("Please select an event!");
+            return;
         }
-    };
 
-    const handleSelectEvent = async (eventId) => {
-        setSelectedEventId(eventId);
-        try {
-            const res = await axios.get(`http://localhost:8080/api/organizers/feedback-report/${eventId}`);
-            setFeedbackReport(res.data);
-        } catch (err) {
-            console.error("Error fetching feedback report:", err);
-        }
-    };
-
-    const renderStars = (avgRating) => {
-        const fullStars = Math.floor(avgRating);
-        const halfStar = avgRating % 1 >= 0.5;
-        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-
-        return (
-            <span className="text-warning">
-                {"★".repeat(fullStars)}
-                {halfStar && "½"}
-                {"☆".repeat(emptyStars)}
-            </span>
-        );
+        axios.get(`http://localhost:8080/api/organizers/feedback-report/${selectedEventId}`)
+            .then(res => {
+                setFeedbackReport(res.data);
+            })
+            .catch(err => {
+                console.error("Error fetching feedback report:", err);
+                alert("Failed to fetch feedback report.");
+            });
     };
 
     return (
         <div className="container mt-5">
             <Navbar />
-            <h2 className="mb-4">Feedback Reports</h2>
+            <div className="text-center mb-4">
+                <h2>Feedback Report</h2>
+            </div>
 
             <div className="mb-4">
-                <h5>Select Event</h5>
                 <select
                     className="form-select"
-                    onChange={(e) => handleSelectEvent(e.target.value)}
-                    value={selectedEventId || ""}
+                    value={selectedEventId}
+                    onChange={(e) => setSelectedEventId(e.target.value)}
                 >
-                    <option value="" disabled>Select an event</option>
+                    <option value="">Select an Event</option>
                     {events.map((event) => (
                         <option key={event.eventId} value={event.eventId}>
                             {event.title}
@@ -80,27 +60,34 @@ function FeedbackReportPage() {
                 </select>
             </div>
 
-            {feedbackReport && (
-                <div className="card p-4">
-                    <h4 className="mb-3">Summary</h4>
-                    <p><strong>Average Rating:</strong> {renderStars(feedbackReport.averageRating)} ({feedbackReport.averageRating.toFixed(1)})</p>
-                    <p><strong>Remark:</strong> {feedbackReport.remark}</p>
+            <div className="text-center mb-4">
+                <button className="btn btn-primary" onClick={handleFetchReport}>
+                    Get Feedback Report
+                </button>
+            </div>
 
-                    <h5 className="mt-4">Feedbacks:</h5>
-                    {feedbackReport.feedbacks.length > 0 ? (
+            {feedbackReport && (
+                <div className="card">
+                    <div className="card-body">
+                        <h5 className="card-title">Average Rating: {feedbackReport.averageRating.toFixed(2)}</h5>
+                        <p className="card-text">Remark: {feedbackReport.remark}</p>
+                        <h6>Feedbacks:</h6>
                         <ul className="list-group">
                             {feedbackReport.feedbacks.map((fb, index) => (
                                 <li key={index} className="list-group-item">
-                                    <strong>Rating:</strong> {renderStars(fb.rating)} ({fb.rating})<br />
-                                    <strong>Comment:</strong> {fb.content}
+                                    {fb.content} — Rating: {fb.rating}
                                 </li>
                             ))}
                         </ul>
-                    ) : (
-                        <p className="text-muted">No feedbacks available for this event.</p>
-                    )}
+                    </div>
                 </div>
             )}
+
+            <div className="text-center mt-4">
+                <button className="btn btn-secondary" onClick={() => navigate("/home-organizer")}>
+                    Back to Dashboard
+                </button>
+            </div>
         </div>
     );
 }

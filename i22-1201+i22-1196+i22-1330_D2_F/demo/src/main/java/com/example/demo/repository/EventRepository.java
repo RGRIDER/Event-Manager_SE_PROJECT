@@ -3,18 +3,21 @@ package com.example.demo.repository;
 import com.example.demo.models.Event;
 import com.example.demo.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import java.util.List;
 
-@Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    /**
-     * Find all events created by a specific organizer
-     */
+
     List<Event> findByOrganizer(User organizer);
 
-    /**
-     * Check if an event with the given title already exists
-     */
-    boolean existsByTitle(String title);
+    @Query("SELECT e FROM Event e " +
+            "WHERE (:title IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
+            "AND (:organizerName IS NULL OR LOWER(CONCAT(e.organizer.firstName, ' ', e.organizer.lastName)) LIKE LOWER(CONCAT('%', :organizerName, '%'))) " +
+            "AND (:location IS NULL OR LOWER(e.location) LIKE LOWER(CONCAT('%', :location, '%')))")
+    List<Event> searchEvents(
+            @Param("title") String title,
+            @Param("organizerName") String organizerName,
+            @Param("location") String location
+    );
 }

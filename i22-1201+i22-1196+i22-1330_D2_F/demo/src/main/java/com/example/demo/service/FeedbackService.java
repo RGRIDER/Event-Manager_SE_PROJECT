@@ -6,6 +6,8 @@ import com.example.demo.repository.FeedbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class FeedbackService {
 
@@ -15,5 +17,9 @@ public class FeedbackService {
     public Feedback saveFeedback(Participant participant, String content, int rating) {
         Feedback feedback = new Feedback(participant, content, rating);
         return feedbackRepository.save(feedback);
+    }
+
+    public List<Feedback> getFeedbacksByEventId(Long eventId) {
+        return feedbackRepository.findByParticipant_Event_EventId(eventId);
     }
 }

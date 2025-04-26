@@ -18,6 +18,8 @@ import FeedbackReportPage from "./pages/FeedbackReportPage";
 import AddAnnouncement from "./pages/AddAnnouncement";
 import NotificationsPage from "./pages/NotificationsPage";
 import AdminFullReport from "./pages/AdminFullReport";
+import EditEvent from './pages/EditEvent'; // or adjust the path if it's inside a pages/ folder
+
 
 function App() {
     return (
@@ -41,7 +43,7 @@ function App() {
                 <Route path="/add-announcement" element={<AddAnnouncement />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/admin-full-report" element={<AdminFullReport />} />
-
+                <Route path="/modify-event/:eventId" element={<EditEvent />} />
 
 
             </Routes>

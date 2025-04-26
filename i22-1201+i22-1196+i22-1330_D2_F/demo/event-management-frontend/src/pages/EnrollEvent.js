@@ -6,6 +6,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function EnrollEvent() {
     const [user, setUser] = useState(null);
     const [events, setEvents] = useState([]);
+    const [searchTitle, setSearchTitle] = useState("");
+    const [searchOrganizer, setSearchOrganizer] = useState("");
+    const [searchLocation, setSearchLocation] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -21,10 +24,21 @@ function EnrollEvent() {
         }
     }, [navigate]);
 
-    const fetchEvents = async () => {
+    const fetchEvents = async (filters = {}) => {
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:8080/api/events/all");
+            let url = "http://localhost:8080/api/events/search";
+
+            const params = new URLSearchParams();
+            if (filters.title) params.append("title", filters.title);
+            if (filters.organizer) params.append("organizer", filters.organizer);
+            if (filters.location) params.append("location", filters.location);
+
+            if (Array.from(params).length > 0) {
+                url += `?${params.toString()}`;
+            }
+
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -51,8 +65,8 @@ function EnrollEvent() {
 
             const message = await response.text();
             if (response.ok) {
-                setSuccess(`Successfully enrolled in the event!`);
-                fetchEvents(); // Refresh event list
+                setSuccess("Successfully enrolled in the event!");
+                fetchEvents();
             } else {
                 setError(message || "Failed to enroll.");
             }
@@ -63,10 +77,55 @@ function EnrollEvent() {
         }
     };
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+        fetchEvents({
+            title: searchTitle.trim(),
+            organizer: searchOrganizer.trim(),
+            location: searchLocation.trim(),
+        });
+    };
+
     return (
         <div className="container mt-5">
             <Navbar />
-            <h2 className="text-center">Enroll in an Event</h2>
+            <h2 className="text-center mb-4">Enroll in an Event</h2>
+
+            <form onSubmit={handleSearch} className="mb-5">
+                <div className="row g-2">
+                    <div className="col-md-4">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search by Event Title"
+                            value={searchTitle}
+                            onChange={(e) => setSearchTitle(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-md-4">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search by Organizer Name"
+                            value={searchOrganizer}
+                            onChange={(e) => setSearchOrganizer(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-md-4">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search by Location"
+                            value={searchLocation}
+                            onChange={(e) => setSearchLocation(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-12 text-center">
+                        <button type="submit" className="btn btn-primary mt-3">Search</button>
+                    </div>
+                </div>
+            </form>
+
             {error && <div className="alert alert-danger">{error}</div>}
             {success && <div className="alert alert-success">{success}</div>}
 
@@ -80,25 +139,26 @@ function EnrollEvent() {
                 <div className="row">
                     {events.length > 0 ? (
                         events.map((event) => (
-                            <div key={event.eventId} className="col-md-4 mb-3">
-                                <div className="card h-100">
+                            <div key={event.eventId} className="col-md-4 mb-4">
+                                <div className="card h-100 shadow-sm">
                                     <div className="card-body">
                                         <h5 className="card-title">{event.title}</h5>
                                         <p className="card-text"><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
                                         <p className="card-text"><strong>Location:</strong> {event.location}</p>
                                         <p className="card-text"><strong>Description:</strong> {event.description}</p>
+                                        <p className="card-text"><strong>Organizer:</strong> {event.organizerName}</p>
                                         <button
-                                            className="btn btn-primary w-100"
+                                            className="btn btn-success w-100"
                                             onClick={() => handleEnroll(event.eventId)}
                                         >
-                                            Enroll
+                                            Enroll Now
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <div className="alert alert-info text-center">No events available for enrollment.</div>
+                        <div className="alert alert-info text-center">No events found matching the criteria.</div>
                     )}
                 </div>
             )}
