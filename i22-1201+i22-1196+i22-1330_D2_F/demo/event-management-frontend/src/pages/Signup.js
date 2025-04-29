@@ -9,15 +9,51 @@ const Signup = () => {
         lastName: "",
         email: "",
         password: "",
-        userType: "Participant", // Default user type
+        userType: "Participant",
     });
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const validateForm = () => {
+        const nameRegex = /^[A-Za-z]+$/;
+        const emailRegex = /[a-zA-Z]/;
+        const passwordLength = formData.password.length;
+        const passwordUppercase = /[A-Z]/.test(formData.password);
+        const passwordNumber = /\d/.test(formData.password);
+
+        if (!nameRegex.test(formData.firstName)) {
+            alert("First name should not contain numbers or special characters.");
+            return false;
+        }
+        if (!nameRegex.test(formData.lastName)) {
+            alert("Last name should not contain numbers or special characters.");
+            return false;
+        }
+        if (!emailRegex.test(formData.email)) {
+            alert("Email must contain alphabetic characters.");
+            return false;
+        }
+        if (passwordLength < 8 || passwordLength > 15) {
+            alert("Password must be between 8 and 15 characters.");
+            return false;
+        }
+        if (!passwordUppercase) {
+            alert("Password must contain at least one uppercase letter.");
+            return false;
+        }
+        if (!passwordNumber) {
+            alert("Password must contain at least one number.");
+            return false;
+        }
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
+
         try {
             const response = await axios.post("http://localhost:8080/api/users/signup", formData);
             alert("Signup successful!");

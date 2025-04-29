@@ -7,7 +7,7 @@ function Login() {
     const [credentials, setCredentials] = useState({
         email: "",
         password: "",
-        userType: "Participant" // Default user type
+        userType: "Participant"
     });
 
     const navigate = useNavigate();
@@ -22,23 +22,26 @@ function Login() {
             const response = await axios.post("http://localhost:8080/api/users/login", credentials);
 
             console.log("Login Response:", response.data);
-            alert("Login successful!");
 
-            // Store user data in local storage
+            if (response.data.userType !== credentials.userType) {
+                alert(`Invalid user type selected. You are a ${response.data.userType}.`);
+                return;
+            }
+
+            alert("Login successful!");
             localStorage.setItem("user", JSON.stringify(response.data));
 
-            // Redirect based on user type
             if (response.data.userType === "Participant") {
                 navigate("/home-participant");
             } else if (response.data.userType === "Organizer") {
                 navigate("/home-organizer");
             } else {
-                navigate("/home-admin"); // Default to admin dashboard
+                navigate("/home-admin");
             }
 
         } catch (error) {
             console.error("Login Error:", error.response ? error.response.data : error.message);
-            alert("Invalid email, password, or user type");
+            alert("Invalid email, password, or user type.");
         }
     };
 
